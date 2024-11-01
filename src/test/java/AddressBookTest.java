@@ -9,10 +9,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.openqa.selenium.*;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import java.time.*;
 import java.util.List;
 
 public class AddressBookTest {
+
+    static final String SCREENSHOT_DIRECTORY_PATH = "src/test/Screenshots/";
+
     WebDriver driver;
     WebDriverWait wait;
 
@@ -51,7 +58,9 @@ public class AddressBookTest {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The new address book entry was added successfully", successElement.getText());
         });
-        // TODO: Take screenshot of result using code
+
+        // Take a screenshot of the current page
+        takeScreenshot(SCREENSHOT_DIRECTORY_PATH + testID + ".png");
     }
 
     @ParameterizedTest
@@ -66,7 +75,7 @@ public class AddressBookTest {
     void testValidEditAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName, String Address1, String Address2, String Address3, String City, String Province, String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2, String Website3) throws NoSuchElementException {
         // Go to the new entry page
         driver.findElement(By.linkText("List All Entries")).click();
-        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); // TODO: this should be a relevent edit button
+        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); // FIXME: this should be a relevent edit button
         
         // Ensure we are on the correct page
         assertEquals("http://localhost/editEntry.php", driver.getCurrentUrl());
@@ -85,7 +94,10 @@ public class AddressBookTest {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The address book entry was updated successfully", successElement.getText());
         });
-        // TODO: Take screenshot of result using code
+
+        // Take a screenshot of the current page
+        takeScreenshot(SCREENSHOT_DIRECTORY_PATH + testID + ".png");
+
     }
 
     @ParameterizedTest
@@ -147,6 +159,28 @@ public class AddressBookTest {
         }
         // Submit the entry
         driver.findElement(By.id("submit_button")).submit();
+    }
+
+    /* 
+    ----------------------------------------------------------
+    Name: takeScreenshot
+    ----------------------------------------------------------
+    Description: Takes a screenshot of the current page the WebDriver is on and saves it to the given file path
+    Use: takeScreenshot(SCREENSHOT_DIRECTORY_PATH + testID + ".png");
+    ----------------------------------------------------------
+    Parameters:
+        String filePath - The file path which the screenshot will be saved to. Ensure that this includes the file extension as well.
+    ----------------------------------------------------------
+     */
+    void takeScreenshot(String filePath){
+        try{
+            TakesScreenshot screenshoter = ((TakesScreenshot) driver);
+            File screenshot = screenshoter.getScreenshotAs(OutputType.FILE);
+            File destFile = new File(filePath);
+            FileUtils.copyFile(screenshot, destFile);
+        } catch (IOException ex) {
+            System.err.println("ERROR: Unable to save screenshot... | " + ex.getMessage());
+        }
     }
 }
 
