@@ -27,31 +27,7 @@ public class AddressBookTest {
         driver.close();
     }
 
-    @Test @Disabled
-    void testAddressBookTitle(){
-        String actualTitle = driver.getTitle();
-        assertEquals("Address Book", actualTitle);
-    }
-    @Test @Disabled
-    void testListEntriesLink(){
-        WebElement listLink = driver.findElement(By.xpath("/html/body/doctype/ul/li[1]/a"));
-        listLink.click();
-
-        String actualTitle = driver.getTitle();
-        assertEquals("Address Book", actualTitle);
-
-        String actualHeader = driver.findElement(By.xpath("/html/body/div[1]/h1")).getText();
-        assertEquals("Address Book - All Entries", actualHeader);
-    }
-    @Test @Disabled
-    void testAddEntryLink(){
-        WebElement addLink = driver.findElement(By.xpath("/html/body/doctype/ul/li[2]/a"));
-        addLink.click();
-        
-        String actualTitle = driver.getTitle();
-        assertEquals("Address Book", actualTitle);
-    }
-
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @ParameterizedTest
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
     void testValidAddAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName, String Address1, String Address2, String Address3, String City, String Province, String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2, String Website3) throws NoSuchElementException {
@@ -75,8 +51,16 @@ public class AddressBookTest {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The new address book entry was added successfully", successElement.getText());
         });
+        // TODO: Take screenshot of result using code
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = "/InvalidData.csv", numLinesToSkip = 1)
+    void testInvalidAddAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName, String Address1, String Address2, String Address3, String City, String Province, String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2, String Website3) throws NoSuchElementException {
+        // TODO: Create Invalid Add Address Test Script
+    }
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @ParameterizedTest
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
     void testValidEditAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName, String Address1, String Address2, String Address3, String City, String Province, String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2, String Website3) throws NoSuchElementException {
@@ -101,10 +85,26 @@ public class AddressBookTest {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The address book entry was updated successfully", successElement.getText());
         });
+        // TODO: Take screenshot of result using code
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = "/InvalidData.csv", numLinesToSkip = 1)
+    void testInvalidEditAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName, String Address1, String Address2, String Address3, String City, String Province, String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2, String Website3) throws NoSuchElementException {
+        // TODO: Create Invalid Edit Address Test Script
+    }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    // TODO: List address test script
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    // TODO: View address test script
+
+
+
+    // ==================================== HELPER METHODS ====================================
     /*
     ----------------------------------------------------------
     Name: enterTestDataIntoAddressForm
