@@ -1,0 +1,6 @@
+Test ID,EntryType,FirstName,LastName,BusinessName,Address1,Address2,Address3,City,Province,Country,PostalCode,Email1,Email2,Email3,Phone1Type,Phone1Num,Phone2Type,Phone2Num,Phone3Type,Phone3Num,Website1,Website2,Website3
+TC-Valid-01,Family,Riley,Huston,Business,1234 Address St.,Address2,Address3,London,Ontario,Canada,A1B2C3,email@mail.com,,email.com,Mobile,1231231234,Home,3213214321,Home,1231231234,Website.com,Website,Website
+TC-Valid-02,Family,,Huston,Business,1234 Address St., , ,London,Ontario,Canada,A1B2C3,email@mail.com,, ,Mobile,1231231234,Home,3213214321, , ,Website.com, , 
+TC-Valid-03,Family,Riley,Huston,Business,1234 Address St., , ,London,Ontario,,A1B2C3,email@mail.com,, ,Mobile,1231231234,Home,3213214321, , ,Website.com, , 
+TC-Valid-04,Family,Riley,Huston,Business,, , ,London,Ontario,Canada,A1B2C3,email@mail.com,, ,Mobile,1231231234,Home,3213214321, , ,Website.com, , 
+TC-Valid-05,Family,Riley,Huston,Business,1234 Address St., , ,City,Ontario,Canada,A1B2C3,email@mail.com,, ,Mobile,1231231234,Home,3213214321, , ,Website.com, , 
