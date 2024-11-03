@@ -1,6 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -17,10 +18,12 @@ import org.apache.commons.io.FileUtils;
 import java.time.*;
 import java.util.List;
 
+@TestMethodOrder(OrderAnnotation.class)
 public class AddressBookTest {
 
     static final String SCREENSHOT_DIRECTORY_PATH = "src/test/Screenshots/";
-
+    static final String URL = "http://localhost"; 
+    
     WebDriver driver;
     WebDriverWait wait;
 
@@ -28,8 +31,7 @@ public class AddressBookTest {
     void setUp() {
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        driver.get("http://localhost/addressbook/index.php");// instead of just local host as since i use xaamp and it
-                                                             // just sends me to their homepage
+        driver.get(URL + "/index.php");
     }
 
     @AfterEach
@@ -37,8 +39,8 @@ public class AddressBookTest {
         driver.close();
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(1)
     @ParameterizedTest
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
     void testValidAddAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName,
@@ -46,11 +48,17 @@ public class AddressBookTest {
             String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num,
             String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2,
             String Website3) throws NoSuchElementException {
+
+        // Test that we are on the landing page
+        String expectedUrl = URL + "/index.php";
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+
         // Go to the new entry page
         driver.findElement(By.linkText("Add New Entry")).click();
 
         // Ensure we are on the correct page
-        assertEquals("http://localhost/addressbook/newEntry.php", driver.getCurrentUrl());
+        assertEquals(URL + "/newEntry.php", driver.getCurrentUrl());
 
         // Create array of all text fields
         String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
@@ -61,9 +69,7 @@ public class AddressBookTest {
         // Call the helper method which will populate the form with the test data
         enterTestDataIntoAddressForm(testID, textData, dropdownData);
 
-        // Ensure the entry was added properly by checking if the success element is
-        // present.
-        // TODO: maybe we should verify by checking the entry list
+        // Ensure the entry was added properly by checking if the success element is present and holds the correct message.
         assertDoesNotThrow(() -> {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The new address book entry was added successfully", successElement.getText());
@@ -73,6 +79,7 @@ public class AddressBookTest {
         takeScreenshot(SCREENSHOT_DIRECTORY_PATH + testID + ".png");
     }
 
+    @Order(2)
     @ParameterizedTest
     @CsvFileSource(resources = "/InvalidData.csv", numLinesToSkip = 1)
     void testInvalidAddAddresses(String testID, String EntryType, String FirstName, String LastName,
@@ -83,8 +90,24 @@ public class AddressBookTest {
         // TODO: Create Invalid Add Address Test Script
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(3)
+    @Test
+    void testListAllEntries() {
+        String expectedUrl = URL + "/index.php";
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);// Test that we are still on the correct URL
+
+        // Go to the list all entries page
+        driver.findElement(By.linkText("List All Entries")).click();
+        String expectedListUrl = URL + "/allList.php";
+        String actualListUrl = driver.getCurrentUrl();
+        assertEquals(expectedListUrl, actualListUrl);// Test that we on the list all entries page
+        takeScreenshot(SCREENSHOT_DIRECTORY_PATH + ".png");
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(4)
     @ParameterizedTest
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
     void testValidEditAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName,
@@ -92,15 +115,20 @@ public class AddressBookTest {
             String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num,
             String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2,
             String Website3) throws NoSuchElementException {
+        
+        // Test that we are on the landing page
+        String expectedUrl = URL + "/index.php";
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+
         // Go to the new entry page
         driver.findElement(By.linkText("List All Entries")).click();
-        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); // FIXME: this
-                                                                                                     // should be a
-                                                                                                     // relevent edit
-                                                                                                     // button
 
-        // Ensure we are on the correct page
-        assertEquals("http://localhost/addressbook/editEntry.php", driver.getCurrentUrl());
+        // Find the first edit entry button and click it
+        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); 
+
+        // Ensure we are on the edit entry page
+        assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
 
         // Create array of all text fields
         String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
@@ -111,9 +139,7 @@ public class AddressBookTest {
         // Call the helper method which will populate the form with the test data
         enterTestDataIntoAddressForm(testID, textData, dropdownData);
 
-        // Ensure the entry was edited properly by checking if the success element is
-        // present.
-        // TODO: maybe we should verify by checking the entry list
+        // Ensure the entry was edited properly by checking if the success element is present and holds the correct message.
         assertDoesNotThrow(() -> {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The address book entry was updated successfully", successElement.getText());
@@ -124,6 +150,7 @@ public class AddressBookTest {
 
     }
 
+    @Order(5)
     @ParameterizedTest
     @CsvFileSource(resources = "/InvalidData.csv", numLinesToSkip = 1)
     void testInvalidEditAddresses(String testID, String EntryType, String FirstName, String LastName,
@@ -134,23 +161,10 @@ public class AddressBookTest {
         // TODO: Create Invalid Edit Address Test Script
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES
-    @Test
-    void testListAllEntries() {
-        String expectedUrl = "http://localhost/addressbook/index.php";
-        String actualUrl = driver.getCurrentUrl();
-        assertEquals(expectedUrl, actualUrl);// Test that we are still on the correct URL
 
-        // Go to the list all entries page
-        driver.findElement(By.linkText("List All Entries")).click();
-        String expectedListUrl = "http://localhost/addressbook/allList.php";
-        String actualListUrl = driver.getCurrentUrl();
-        assertEquals(expectedListUrl, actualListUrl);// Test that we on the list all entries page
-        takeScreenshot(SCREENSHOT_DIRECTORY_PATH + ".png");
 
-    }
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @Order(6)
     @Test
     void testViewAddresses() {
         driver.findElement(By.linkText("List All Entries")).click();
@@ -186,29 +200,20 @@ public class AddressBookTest {
                 index++;
 
             } catch (NoSuchElementException | ElementClickInterceptedException e) {
-                System.out.println("An error occurred: " + e.getMessage());
+                // FIXME: if an error occurs shouldn't this test fail?
+                System.out.println("An error occurred: " + e.getMessage()); 
                 break; // Exit loop on error
             }
         }
     }
 
-    // ==================================== HELPER METHODS
-    // ====================================
-    /*
-     * ----------------------------------------------------------
-     * Name: enterTestDataIntoAddressForm
-     * ----------------------------------------------------------
-     * Description: Takes in test data and inputs the data into the addressbook
-     * form.
-     * Use: enterTestDataIntoAddressForm(testID, textData, dropdownData);
-     * ----------------------------------------------------------
-     * Parameters:
-     * String testID - The test ID for the current test. Usually in the form: TC-XX
-     * String[] textData - The data for all the text inputs for the form. This will
-     * be retrieved from a CSV file
-     * String[] dropdownData - The data for all the dropdown forms. This will be
-     * retrieved from a CSV file
-     * ----------------------------------------------------------
+    // ==================================== HELPER METHODS ====================================
+
+    /**
+     * Takes in test data and inputs the data into the addressbook form.
+     * @param testID - The test ID for the current test. Usually in the form: TC-XX
+     * @param textData - The data for all the text inputs for the form. This will be retrieved from a CSV file
+     * @param dropdownData - The data for all the dropdown forms. This will be retrieved from a CSV file
      */
     void enterTestDataIntoAddressForm(String testID, String[] textData, String[] dropdownData) {
         // Find all the input elements on the page
@@ -233,28 +238,18 @@ public class AddressBookTest {
                     // Select the dropdown element based on the value of the text data
                     dropdown.selectByValue(dropdownData[i]);
                 }
-            } catch (NoSuchElementException ex) { // If the dropdown selection could not be found this is likely an
-                                                  // error in the test data.
-                throw new NoSuchElementException(testID + " LIKELY DROPDOWN TEST DATA ERROR: \"" + dropdownData[i]
-                        + "\" | ERROR MESSAGE: " + ex.getMessage());
+            } catch (NoSuchElementException ex) { // If the dropdown selection could not be found this is likely an error in the test data.
+                throw new NoSuchElementException(testID + " LIKELY DROPDOWN TEST DATA ERROR: \"" + dropdownData[i] + "\" | ERROR MESSAGE: " + ex.getMessage());
             }
         }
         // Submit the entry
         driver.findElement(By.id("submit_button")).submit();
     }
 
-    /*
-     * ----------------------------------------------------------
-     * Name: takeScreenshot
-     * ----------------------------------------------------------
-     * Description: Takes a screenshot of the current page the WebDriver is on and
-     * saves it to the given file path
-     * Use: takeScreenshot(SCREENSHOT_DIRECTORY_PATH + testID + ".png");
-     * ----------------------------------------------------------
+    /**
+     * Takes a screenshot of the current page the WebDriver is on and saves it to the given file path.
      * Parameters:
-     * String filePath - The file path which the screenshot will be saved to. Ensure
-     * that this includes the file extension as well.
-     * ----------------------------------------------------------
+     * @param filePath - The file path which the screenshot will be saved to. Ensure that this includes the name and file extension for the image as well.
      */
     void takeScreenshot(String filePath) {
         try {
