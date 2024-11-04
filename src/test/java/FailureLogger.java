@@ -11,6 +11,8 @@ import org.openqa.selenium.WebDriver;
 
 public class FailureLogger implements AfterEachCallback {
 
+    static final String SCREENSHOT_DIRECTORY_PATH = "src/test/Screenshots/";
+
     @Override
     public void afterEach(ExtensionContext context) throws Exception {
 
@@ -25,7 +27,7 @@ public class FailureLogger implements AfterEachCallback {
             System.out.println("Taking Screenshot of current page...");
             String fileName = context.getDisplayName() + ".png";
             System.out.println(fileName);
-            takeScreenshot(testObject.driver, AddressBookTest.SCREENSHOT_DIRECTORY_PATH + fileName);
+            takeScreenshot(testObject.driver, SCREENSHOT_DIRECTORY_PATH + fileName);
         }
         // Close the driver page
         testObject.driver.close();

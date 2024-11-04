@@ -19,7 +19,6 @@ import java.util.List;
 @TestMethodOrder(OrderAnnotation.class)
 public class AddressBookTest {
 
-    static final String SCREENSHOT_DIRECTORY_PATH = "src/test/Screenshots/";
     static final String URL = "http://localhost"; 
     
     WebDriver driver;
