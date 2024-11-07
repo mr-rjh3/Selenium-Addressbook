@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -25,7 +26,9 @@ public class FailureLogger implements AfterEachCallback {
 
             // Take Screenshot of current page
             System.out.println("Taking Screenshot of current page...");
-            String fileName = context.getDisplayName() + ".png";
+            // Get current date 
+            Date currentDate = new Date();
+            String fileName = context.getDisplayName() + " " + currentDate.getTime() +".png";
             System.out.println(fileName);
             takeScreenshot(testObject.driver, SCREENSHOT_DIRECTORY_PATH + fileName);
         }
