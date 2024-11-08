@@ -142,19 +142,31 @@ public class AddressBookTest {
             String Website3) throws NoSuchElementException {
 
         // Test that we are on the landing page
-        String expectedUrl = URL + "/index.php";
-        String actualUrl = driver.getCurrentUrl();
-        assertEquals(expectedUrl, actualUrl);
-
+        assertEquals(URL + "/index.php", driver.getCurrentUrl());
+        
         // Go to the new entry page
         driver.findElement(By.linkText("List All Entries")).click();
 
-        // Find the first edit entry button and click it
+        // Test that we are on the list all entries page
+        assertEquals(URL + "/allList.php", driver.getCurrentUrl());
+                
+        // Find the address ID for the entry we will edit
+        String expectedAddressID = driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[1]")).getAttribute("value");
+        System.out.println("EXPECTED ADDRESS ID:" + expectedAddressID);
+        
+        // click the edit entry button
         driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click();
-
+        
         // Ensure we are on the edit entry page
         assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
+        
+        // get the address ID of the current page
+        String actualAddressID = driver.findElement(By.id("address_id")).getAttribute("value");
+        System.out.println("ACTUAL ADDRESS ID:" + actualAddressID);
 
+        // Assert that the ID we clicked and the ID we are editing are equal
+        assertEquals(expectedAddressID, actualAddressID);
+        
         // Create array of all text fields
         String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
                 PostalCode, Email1, Email2, Email3, Phone1Num, Phone2Num, Phone3Num, Website1, Website2, Website3 };
@@ -181,20 +193,32 @@ public class AddressBookTest {
             String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type,
             String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1,
             String Website2, String Website3) throws NoSuchElementException {
+        
         // Test that we are on the landing page
-        String expectedUrl = URL + "/index.php";
-        String actualUrl = driver.getCurrentUrl();
-        assertEquals(expectedUrl, actualUrl);
-
+        assertEquals(URL + "/index.php", driver.getCurrentUrl());
+        
         // Go to the new entry page
         driver.findElement(By.linkText("List All Entries")).click();
 
-        // Find the first edit entry button and click it
+        // Test that we are on the list all entries page
+        assertEquals(URL + "/allList.php", driver.getCurrentUrl());
+                
+        // Find the address ID for the entry we will edit
+        String expectedAddressID = driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[1]")).getAttribute("value");
+        System.out.println("EXPECTED ADDRESS ID:" + expectedAddressID);
+        
+        // click the edit entry button
         driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click();
-
+        
         // Ensure we are on the edit entry page
         assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
+        
+        // get the address ID of the current page
+        String actualAddressID = driver.findElement(By.id("address_id")).getAttribute("value");
+        System.out.println("ACTUAL ADDRESS ID:" + actualAddressID);
 
+        // Assert that the ID we clicked and the ID we are editing are equal
+        assertEquals(expectedAddressID, actualAddressID);
         // Create array of all text fields
         String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
                 PostalCode, Email1, Email2, Email3, Phone1Num, Phone2Num, Phone3Num, Website1, Website2, Website3 };
@@ -217,11 +241,19 @@ public class AddressBookTest {
     @Order(6)
     @Test
     void testViewAddresses() {
-        driver.findElement(By.linkText("List All Entries")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1000)); // Set a 10-second timeout
 
+        // FIXME: Assert we are on the addressbook home page here
+        
+        driver.findElement(By.linkText("List All Entries")).click();
+        
+        
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1000)); // Set a 10-second timeout
+        
         int index = 0;
         while (true) {
+
+            // FIXME: Assert we are on the List All Entries page here
+
             // Find all "View Details" buttons on the page
             List<WebElement> viewDetails = driver.findElements(By.xpath("//input[@value='View Details']"));
 
@@ -233,6 +265,9 @@ public class AddressBookTest {
             // Click the next "View Details" button based on the index
             viewDetails.get(index).click();
 
+            // FIXME: Assert we are on the View Entry page here
+
+            // FIXME: if the wait timesout it throws an exception, so surround all the wait.until() with assertDoesNotThrow to prevent the test case from erroring
             // Wait for the "Return" button to be clickable
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/a")));
 
