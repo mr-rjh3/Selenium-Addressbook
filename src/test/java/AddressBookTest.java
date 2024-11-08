@@ -19,8 +19,8 @@ import java.util.List;
 @TestMethodOrder(OrderAnnotation.class)
 public class AddressBookTest {
 
-    static final String URL = "http://localhost"; 
-    
+    static final String URL = "http://localhost/addressbook";// Address Book URL
+
     WebDriver driver;
     WebDriverWait wait;
 
@@ -37,8 +37,8 @@ public class AddressBookTest {
         // See FailureLogger.java to see AfterEach logic
     }
 
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(1)
     @ParameterizedTest(name = "testValidAddAddresses [{0}]")
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
@@ -68,7 +68,8 @@ public class AddressBookTest {
         // Call the helper method which will populate the form with the test data
         enterTestDataIntoAddressForm(testID, textData, dropdownData);
 
-        // Ensure the entry was added properly by checking if the success element is present and holds the correct message.
+        // Ensure the entry was added properly by checking if the success element is
+        // present and holds the correct message.
         assertDoesNotThrow(() -> {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The new address book entry was added successfully", successElement.getText());
@@ -84,7 +85,7 @@ public class AddressBookTest {
             String Country, String PostalCode, String Email1, String Email2, String Email3, String Phone1Type,
             String Phone1Num, String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1,
             String Website2, String Website3) throws NoSuchElementException {
-        
+
         // Test that we are on the landing page
         String expectedUrl = URL + "/index.php";
         String actualUrl = driver.getCurrentUrl();
@@ -112,7 +113,8 @@ public class AddressBookTest {
 
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(3)
     @Test
     void testListAllEntries() {
@@ -128,7 +130,8 @@ public class AddressBookTest {
         assertEquals(expectedListUrl, actualListUrl);// Test that we on the list all entries page
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(4)
     @ParameterizedTest(name = "testValidEditAddresses [{0}]")
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
@@ -137,7 +140,7 @@ public class AddressBookTest {
             String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num,
             String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2,
             String Website3) throws NoSuchElementException {
-        
+
         // Test that we are on the landing page
         String expectedUrl = URL + "/index.php";
         String actualUrl = driver.getCurrentUrl();
@@ -147,7 +150,7 @@ public class AddressBookTest {
         driver.findElement(By.linkText("List All Entries")).click();
 
         // Find the first edit entry button and click it
-        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); 
+        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click();
 
         // Ensure we are on the edit entry page
         assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
@@ -161,12 +164,12 @@ public class AddressBookTest {
         // Call the helper method which will populate the form with the test data
         enterTestDataIntoAddressForm(testID, textData, dropdownData);
 
-        // Ensure the entry was edited properly by checking if the success element is present and holds the correct message.
+        // Ensure the entry was edited properly by checking if the success element is
+        // present and holds the correct message.
         assertDoesNotThrow(() -> {
             WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
             assertEquals("The address book entry was updated successfully", successElement.getText());
         });
-
 
     }
 
@@ -187,7 +190,7 @@ public class AddressBookTest {
         driver.findElement(By.linkText("List All Entries")).click();
 
         // Find the first edit entry button and click it
-        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click(); 
+        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click();
 
         // Ensure we are on the edit entry page
         assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
@@ -201,16 +204,16 @@ public class AddressBookTest {
         // Call the helper method which will populate the form with the test data
         enterTestDataIntoAddressForm(testID, textData, dropdownData);
 
-        // Ensure the edit did not go through by checking if the failure element is present.
+        // Ensure the edit did not go through by checking if the failure element is
+        // present.
         assertDoesNotThrow(() -> {
             driver.findElement(By.xpath("/html/body/p"));
         });
 
     }
 
-
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(6)
     @Test
     void testViewAddresses() {
@@ -227,40 +230,41 @@ public class AddressBookTest {
                 break;
             }
 
-            try {
-                // Click the next "View Details" button based on the index
-                viewDetails.get(index).click();
+            // Click the next "View Details" button based on the index
+            viewDetails.get(index).click();
 
-                // Wait for the "Return" button to be clickable
-                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/a")));
+            // Wait for the "Return" button to be clickable
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/a")));
 
-                // Click the "Return" button to go back to the list
-                driver.findElement(By.xpath("/html/body/div[2]/a")).click();
+            // Click the "Return" button to go back to the list
+            driver.findElement(By.xpath("/html/body/div[2]/a")).click();
 
-                // Wait for the "View Details" buttons to be present again
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@value='View Details']")));
+            // Wait for the "View Details" buttons to be present again
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@value='View Details']")));
 
-                // Increment the index to click the next button in the next iteration
-                index++;
-
-            } catch (NoSuchElementException | ElementClickInterceptedException e) {
-                // FIXME: if an error occurs shouldn't this test fail?
-                System.out.println("An error occurred: " + e.getMessage()); 
-                break; // Exit loop on error
-            }
+            // Increment the index to click the next button in the next iteration
+            index++;
         }
     }
 
-    // ==================================== HELPER METHODS ====================================
+    // ==================================== HELPER METHODS
+    // ====================================
 
     /**
      * Takes in test data and inputs the data into the addressbook form.
-     * @param testID - The test ID for the current test. Usually in the form: TC-XX
-     * @param textData - The data for all the text inputs for the form. This will be retrieved from a CSV file
-     * @param dropdownData - The data for all the dropdown forms. This will be retrieved from a CSV file
-     * @throws NoSuchElementException - If the driver cannot find an element this will be thrown, likely cause is an issue in the test data.
+     * 
+     * @param testID       - The test ID for the current test. Usually in the form:
+     *                     TC-XX
+     * @param textData     - The data for all the text inputs for the form. This
+     *                     will be retrieved from a CSV file
+     * @param dropdownData - The data for all the dropdown forms. This will be
+     *                     retrieved from a CSV file
+     * @throws NoSuchElementException - If the driver cannot find an element this
+     *                                will be thrown, likely cause is an issue in
+     *                                the test data.
      */
-    void enterTestDataIntoAddressForm(String testID, String[] textData, String[] dropdownData) throws NoSuchElementException{
+    void enterTestDataIntoAddressForm(String testID, String[] textData, String[] dropdownData)
+            throws NoSuchElementException {
         // Find all the input elements on the page
         List<WebElement> inputElements = driver.findElements(By.tagName("input"));
         // Find all the select elements on the page
@@ -283,8 +287,10 @@ public class AddressBookTest {
                     // Select the dropdown element based on the value of the text data
                     dropdown.selectByValue(dropdownData[i]);
                 }
-            } catch (NoSuchElementException ex) { // If the dropdown selection could not be found this is likely an error in the test data.
-                throw new NoSuchElementException(testID + " LIKELY DROPDOWN TEST DATA ERROR: \"" + dropdownData[i] + "\" | ERROR MESSAGE: " + ex.getMessage());
+            } catch (NoSuchElementException ex) { // If the dropdown selection could not be found this is likely an
+                                                  // error in the test data.
+                throw new NoSuchElementException(testID + " LIKELY DROPDOWN TEST DATA ERROR: \"" + dropdownData[i]
+                        + "\" | ERROR MESSAGE: " + ex.getMessage());
             }
         }
         // Submit the entry
