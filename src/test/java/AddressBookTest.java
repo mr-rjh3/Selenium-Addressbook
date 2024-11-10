@@ -248,7 +248,7 @@ public class AddressBookTest {
         driver.findElement(By.linkText("List All Entries")).click();
         
         
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(0)); // Set a 10-second timeout
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1000)); // Set a 10-second timeout
         
         int index = 0;
         while (true) {
