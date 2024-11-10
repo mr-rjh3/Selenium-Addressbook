@@ -242,17 +242,19 @@ public class AddressBookTest {
     @Test
     void testViewAddresses() {
 
-        // FIXME: Assert we are on the addressbook home page here
+        // Test that we are on the landing page
+        assertEquals(URL + "/index.php", driver.getCurrentUrl());
         
         driver.findElement(By.linkText("List All Entries")).click();
         
         
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1000)); // Set a 10-second timeout
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(0)); // Set a 10-second timeout
         
         int index = 0;
         while (true) {
 
-            // FIXME: Assert we are on the List All Entries page here
+            // Assert we are on the List All Entries page here
+            assertEquals(URL + "/allList.php", driver.getCurrentUrl());
 
             // Find all "View Details" buttons on the page
             List<WebElement> viewDetails = driver.findElements(By.xpath("//input[@value='View Details']"));
@@ -265,17 +267,23 @@ public class AddressBookTest {
             // Click the next "View Details" button based on the index
             viewDetails.get(index).click();
 
-            // FIXME: Assert we are on the View Entry page here
+            // Assert we are on the View Entry page here
+            assertEquals(URL + "/viewEntry.php", driver.getCurrentUrl());
 
-            // FIXME: if the wait timesout it throws an exception, so surround all the wait.until() with assertDoesNotThrow to prevent the test case from erroring
             // Wait for the "Return" button to be clickable
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/a")));
-
+            assertDoesNotThrow( () ->{
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/a")));
+            });
+            
             // Click the "Return" button to go back to the list
-            driver.findElement(By.xpath("/html/body/div[2]/a")).click();
+            assertDoesNotThrow( () ->{
+                driver.findElement(By.xpath("/html/body/div[2]/a")).click();
+            });
 
             // Wait for the "View Details" buttons to be present again
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@value='View Details']")));
+            assertDoesNotThrow( () ->{
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@value='View Details']")));
+            });
 
             // Increment the index to click the next button in the next iteration
             index++;
