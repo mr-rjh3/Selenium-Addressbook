@@ -19,7 +19,7 @@ import java.util.List;
 @TestMethodOrder(OrderAnnotation.class)
 public class AddressBookTest {
 
-    static final String URL = "http://localhost/addressbook";// Address Book URL
+    static final String URL = "http://localhost";// Address Book URL
 
     WebDriver driver;
     WebDriverWait wait;
