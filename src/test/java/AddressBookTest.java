@@ -19,7 +19,7 @@ import java.util.List;
 @TestMethodOrder(OrderAnnotation.class)
 public class AddressBookTest {
 
-    static final String URL = "http://localhost/addressbook";// Address Book URL
+    static final String URL = "http://localhost";// Address Book URL
 
     WebDriver driver;
     WebDriverWait wait;
@@ -37,8 +37,95 @@ public class AddressBookTest {
         // See FailureLogger.java to see AfterEach logic
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FAKER ADD ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @ParameterizedTest(name = "testFakerAddAddresses [{0}]")
+    @CsvFileSource(resources = "/FakerData.csv", numLinesToSkip = 1)
+    void testFakerAddAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName,
+            String Address1, String Address2, String Address3, String City, String Province, String Country,
+            String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num,
+            String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2,
+            String Website3) throws NoSuchElementException {
+
+        // Test that we are on the landing page
+        String expectedUrl = URL + "/index.php";
+        String actualUrl = driver.getCurrentUrl();
+        assertEquals(expectedUrl, actualUrl);
+
+        // Go to the new entry page
+        driver.findElement(By.linkText("Add New Entry")).click();
+
+        // Ensure we are on the correct page
+        assertEquals(URL + "/newEntry.php", driver.getCurrentUrl());
+
+        // Create array of all text fields
+        String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
+                PostalCode, Email1, Email2, Email3, Phone1Num, Phone2Num, Phone3Num, Website1, Website2, Website3 };
+        // Create array of all dropdown fields
+        String[] dropdownData = { EntryType, Phone1Type, Phone2Type, Phone3Type };
+
+        // Call the helper method which will populate the form with the test data
+        enterTestDataIntoAddressForm(testID, textData, dropdownData);
+
+        // Ensure the entry was added properly by checking if the success element is
+        // present and holds the correct message.
+        assertDoesNotThrow(() -> {
+            WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
+            assertEquals("The new address book entry was added successfully", successElement.getText());
+        });
+    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FAKER EDIT ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @ParameterizedTest(name = "testFakerEditAddresses [{0}]")
+    @CsvFileSource(resources = "/FakerData.csv", numLinesToSkip = 1)
+    void testFakerEditAddresses(String testID, String EntryType, String FirstName, String LastName, String BusinessName,
+            String Address1, String Address2, String Address3, String City, String Province, String Country,
+            String PostalCode, String Email1, String Email2, String Email3, String Phone1Type, String Phone1Num,
+            String Phone2Type, String Phone2Num, String Phone3Type, String Phone3Num, String Website1, String Website2,
+            String Website3) throws NoSuchElementException {
+
+        // Test that we are on the landing page
+        assertEquals(URL + "/index.php", driver.getCurrentUrl());
+        
+        // Go to the new entry page
+        driver.findElement(By.linkText("List All Entries")).click();
+
+        // Test that we are on the list all entries page
+        assertEquals(URL + "/allList.php", driver.getCurrentUrl());
+                
+        // Find the address ID for the entry we will edit
+        String expectedAddressID = driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[1]")).getAttribute("value");
+        System.out.println("EXPECTED ADDRESS ID:" + expectedAddressID);
+        
+        // click the edit entry button
+        driver.findElement(By.xpath("/html/body/table/tbody/tr[2]/td[4]/form[2]/input[3]")).click();
+        
+        // Ensure we are on the edit entry page
+        assertEquals(URL + "/editEntry.php", driver.getCurrentUrl());
+        
+        // get the address ID of the current page
+        String actualAddressID = driver.findElement(By.id("address_id")).getAttribute("value");
+        System.out.println("ACTUAL ADDRESS ID:" + actualAddressID);
+
+        // Assert that the ID we clicked and the ID we are editing are equal
+        assertEquals(expectedAddressID, actualAddressID);
+        
+        // Create array of all text fields
+        String[] textData = { FirstName, LastName, BusinessName, Address1, Address2, Address3, City, Province, Country,
+                PostalCode, Email1, Email2, Email3, Phone1Num, Phone2Num, Phone3Num, Website1, Website2, Website3 };
+        // Create array of all dropdown fields
+        String[] dropdownData = { EntryType, Phone1Type, Phone2Type, Phone3Type };
+
+        // Call the helper method which will populate the form with the test data
+        enterTestDataIntoAddressForm(testID, textData, dropdownData);
+
+        // Ensure the entry was edited properly by checking if the success element is
+        // present and holds the correct message.
+        assertDoesNotThrow(() -> {
+            WebElement successElement = driver.findElement(By.xpath("/html/body/form/div/h2"));
+            assertEquals("The address book entry was updated successfully", successElement.getText());
+        });
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(1)
     @ParameterizedTest(name = "testValidAddAddresses [{0}]")
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
@@ -113,8 +200,7 @@ public class AddressBookTest {
 
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LIST ADDRESSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(3)
     @Test
     void testListAllEntries() {
@@ -130,8 +216,7 @@ public class AddressBookTest {
         assertEquals(expectedListUrl, actualListUrl);// Test that we on the list all entries page
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EDIT ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(4)
     @ParameterizedTest(name = "testValidEditAddresses [{0}]")
     @CsvFileSource(resources = "/ValidData.csv", numLinesToSkip = 1)
@@ -236,8 +321,7 @@ public class AddressBookTest {
 
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VIEW ADDRESS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Order(6)
     @Test
     void testViewAddresses() {
@@ -290,8 +374,7 @@ public class AddressBookTest {
         }
     }
 
-    // ==================================== HELPER METHODS
-    // ====================================
+    // ==================================== HELPER METHODS ====================================
 
     /**
      * Takes in test data and inputs the data into the addressbook form.

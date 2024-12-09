@@ -36,7 +36,7 @@ public class FailureLogger implements AfterEachCallback {
         testObject.driver.close();
     }
 
-    /**
+     /**
      * Takes a screenshot of the current page the WebDriver is on and saves it to the given file path.
      * Parameters:
      * @param driver - The driver used during the test.
@@ -47,7 +47,13 @@ public class FailureLogger implements AfterEachCallback {
         try {
             TakesScreenshot screenshoter = ((TakesScreenshot) driver);
             File screenshot = screenshoter.getScreenshotAs(OutputType.FILE);
+            
+            // Create Screenshot directory if it does not exist
             File destFile = new File(filePath);
+            if(!destFile.getParentFile().exists()){
+                destFile.getParentFile().mkdirs();
+            }
+
             FileUtils.copyFile(screenshot, destFile);
         } catch (IOException ex) {
             System.err.println("ERROR: Unable to save screenshot... | " + ex.getMessage());
